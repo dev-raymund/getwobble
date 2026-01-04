@@ -1,6 +1,7 @@
 import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
+import { usePage } from '@inertiajs/react';
 import {
     Sidebar,
     SidebarContent,
@@ -20,7 +21,7 @@ import {
     reports, 
     withdraw, 
     announcement, 
-    role_permissions, 
+    roles_permissions, 
     chat 
 } from '@/routes';
 import { type NavItem } from '@/types';
@@ -32,6 +33,7 @@ import {
     Calendar, 
     ChartLine, 
     Folder, 
+    Handshake, 
     LayoutGrid, 
     MessageCircle, 
     ShoppingCart, 
@@ -46,16 +48,6 @@ const mainNavItems: NavItem[] = [
         title: 'Dashboard',
         href: dashboard(),
         icon: LayoutGrid,
-    },
-    {
-        title: 'Users',
-        href: users(),
-        icon: Users,
-    },
-    {
-        title: 'Partners',
-        href: partners(),
-        icon: Users,
     },
     {
         title: 'Bookings',
@@ -91,9 +83,31 @@ const mainNavItems: NavItem[] = [
 
 const footerNavItems: NavItem[] = [
     {
-        title: 'Role - Permissions',
-        href: role_permissions(),
+        title: 'Partners',
+        href: partners(),
+        icon: Handshake,
+    },
+    {
+        title: 'Users',
+        href: users(),
         icon: Users,
+        permission: [
+            'view users', 
+            'create users', 
+            'edit users', 
+            'delete users'
+        ], 
+    },
+    {
+        title: 'Roles - Permissions',
+        href: roles_permissions(),
+        icon: Unlock,
+        permission: [
+            'view role/permissions', 
+            'create role/permissions', 
+            'edit role/permissions', 
+            'delete role/permissions'
+        ], 
     },
     {
         title: 'Live Chat',
@@ -103,6 +117,24 @@ const footerNavItems: NavItem[] = [
 ];
 
 export function AppSidebar() {
+
+    const { auth } = usePage().props as any;
+    const userPermissions = auth.user.permissions || [];
+
+    const filterNavItems = (items: NavItem[]) => {
+        return items.filter((item) => {
+            if (!item.permission) return true;
+
+            // If it's an array, check if user has ANY of them (OR logic)
+            if (Array.isArray(item.permission)) {
+                return item.permission.some(p => userPermissions.includes(p));
+            }
+
+            // If it's a single string, check normally
+            return userPermissions.includes(item.permission);
+        });
+    };
+
     return (
         <Sidebar collapsible="icon" variant="inset">
             <SidebarHeader>
@@ -118,11 +150,11 @@ export function AppSidebar() {
             </SidebarHeader>
 
             <SidebarContent>
-                <NavMain items={mainNavItems} />
+                <NavMain items={filterNavItems(mainNavItems)} />
             </SidebarContent>
 
             <SidebarFooter>
-                <NavFooter items={footerNavItems} className="mt-auto" />
+                <NavFooter items={filterNavItems(footerNavItems)} className="mt-auto" />
                 <NavUser />
             </SidebarFooter>
         </Sidebar>

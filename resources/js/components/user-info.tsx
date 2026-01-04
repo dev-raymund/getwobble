@@ -30,7 +30,7 @@ export function UserInfo({
                 )}
                 {showRole && (
                     <span className="truncate text-xs text-muted-foreground capitalize">
-                        {user.roles?.length > 0 ? user.roles[0].name : 'User'}
+                        {user.roles.join(', ')}
                     </span>
                 )}
             </div>

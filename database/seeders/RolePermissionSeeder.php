@@ -25,10 +25,10 @@ class RolePermissionSeeder extends Seeder
             'edit users',
             'delete users',
 
-            'view permissions',
-            'create permissions',
-            'edit permissions',
-            'delete permissions',
+            'view role/permissions',
+            'create role/permissions',
+            'edit role/permissions',
+            'delete role/permissions',
 
             'view partners',
             'create partners',
